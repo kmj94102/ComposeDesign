@@ -2,22 +2,27 @@ package com.example.composedesign.ui.view.shoes
 
 import android.content.Intent
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -46,16 +51,22 @@ fun ShoesMainScreen() {
             .fillMaxSize()
             .background(ShoesBlack)
     ) {
+        /** 상단 타이틀 영역 **/
         ShoesMainHeader()
+        /** 텝 메뉴, 뷰페이져 **/
         ShoesMainBody(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
         )
+        /** 하단 메뉴 **/
         ShoesMainFooter()
     }
 }
 
+/**
+ * 나이키 로고 및 메뉴, 장바구니 아이콘
+ * **/
 @Composable
 fun ShoesMainHeader() {
     Row(
@@ -89,49 +100,26 @@ fun ShoesMainHeader() {
     }
 }
 
+/**
+ * 텝 메뉴, ViewPager
+ * **/
 @Composable
 fun ShoesMainBody(modifier: Modifier) {
     LazyColumn(
         contentPadding = PaddingValues(top = 56.dp, bottom = 100.dp),
         modifier = modifier
     ) {
-        item {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(22.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-            ) {
-                Text(
-                    text = "Basketball",
-                    fontSize = 28.sp,
-                    style = shoesTextStyle(),
-                    color = ShoesYellow
-                )
-                Text(
-                    text = "Running",
-                    fontSize = 28.sp,
-                    style = shoesTextStyle(),
-                    color = Color.White
-                )
-                Text(
-                    text = "Training",
-                    fontSize = 28.sp,
-                    style = shoesTextStyle(),
-                    color = Color.White
-                )
-            }
-        }
+        item { ShoesTabMenu() }
 
         item { Spacer(modifier = Modifier.height(48.dp)) }
 
-        item {
-            ShoesViewPager()
-        }
-
+        item { ShoesViewPager() }
     }
 }
 
+/**
+ * 하단 메뉴
+ * **/
 @Composable
 fun ShoesMainFooter() {
     Box(
@@ -186,6 +174,46 @@ fun ShoesMainFooter() {
     }
 }
 
+/**
+ * 텝 메뉴
+ * **/
+@Composable
+fun ShoesTabMenu() {
+
+    val state = remember { mutableStateOf(0) }
+    val list = listOf("Basketball", "Running", "Training")
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(22.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+    ) {
+        list.forEachIndexed { index, it ->
+            val colorState by animateColorAsState(
+                targetValue = if (index == state.value) ShoesYellow else Color.White,
+                animationSpec = tween(durationMillis = 250, easing = LinearEasing)
+            )
+            Text(
+                text = it,
+                fontSize = 28.sp,
+                style = shoesTextStyle(),
+                color = colorState,
+                modifier = Modifier
+                    .clickable(
+                        indication = null,
+                        interactionSource = MutableInteractionSource()
+                    ) {
+                        state.value = index
+                    }
+            )
+        }
+    }
+}
+
+/**
+ * 메인화면의 ViewPager
+ * **/
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ShoesViewPager() {
@@ -201,29 +229,13 @@ fun ShoesViewPager() {
     ) { page ->
 
         val context = LocalContext.current
+        val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
 
         if (shoesImageList.size > page) {
             ShoesCard(
+                imageRes = shoesImageList[page],
                 modifier = Modifier
-                    .graphicsLayer {
-                        val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-                        // 크기 조절
-                        lerp(
-                            start = 0.9f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        ).also { scale ->
-                            scaleX = scale
-                            scaleY = scale
-                        }
-                        // 투명도 조절
-                        alpha = lerp(
-                            start = 0.2f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        )
-                    },
-                imageRes = shoesImageList[page]
+                    .graphicsLayer { pagerSettings(pageOffset) }
             ) {
                 context.startActivity(
                     Intent(context, ShoesDetailActivity::class.java).also {
@@ -233,7 +245,7 @@ fun ShoesViewPager() {
             }
         } else {
             Button(
-                onClick = {  }, 
+                onClick = { },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = ShoesYellow,
                     contentColor = ShoesBlack
@@ -241,24 +253,7 @@ fun ShoesViewPager() {
                 modifier = Modifier
                     .size(width = 218.dp, height = 300.dp)
                     .clip(RoundedCornerShape(33.dp))
-                    .graphicsLayer {
-                        val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-                        // 크기 조절
-                        lerp(
-                            start = 0.85f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        ).also { scale ->
-                            scaleX = scale
-                            scaleY = scale
-                        }
-                        // 투명도 조절
-                        alpha = lerp(
-                            start = 0.2f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        )
-                    }
+                    .graphicsLayer { pagerSettings(pageOffset) }
             ) {
                 Text(text = "더 보기", style = shoesTextStyle())
             }
@@ -266,10 +261,34 @@ fun ShoesViewPager() {
     }
 }
 
+/**
+ * 메인화면의 HorizontalPager 스크롤 시 크기 및 투명도 변화 셋팅
+ * **/
+fun GraphicsLayerScope.pagerSettings(pageOffset: Float) {
+    // 크기 조절
+    lerp(
+        start = 0.85f,
+        stop = 1f,
+        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+    ).also { scale ->
+        scaleX = scale
+        scaleY = scale
+    }
+    // 투명도 조절
+    alpha = lerp(
+        start = 0.2f,
+        stop = 1f,
+        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+    )
+}
+
+/**
+ * HorizontalPager의 카드 아이템
+ * **/
 @Composable
 fun ShoesCard(
-    modifier: Modifier = Modifier,
     @DrawableRes imageRes: Int,
+    modifier: Modifier = Modifier,
     onClickListener: () -> Unit
 ) {
     Card(
@@ -362,7 +381,8 @@ fun ShoesCard(
                 Image(
                     painter = painterResource(id = R.drawable.ic_plus),
                     contentDescription = "plus",
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier
+                        .align(Alignment.Center)
                         .size(34.dp)
                 )
             }

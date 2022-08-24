@@ -18,8 +18,7 @@ class ShoesDetailActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val index = intent?.getIntExtra(Index, 0) ?: 0
-                    ShoesDetailScreen(index)
+                    ShoesDetailScreen()
                 }
             }
         }
