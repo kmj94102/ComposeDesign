@@ -3,4 +3,5 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_shoes">ShoesActivity</string>
     <string name="title_activity_shoes_detail">ShoesDetailActivity</string>
+    <string name="title_activity_animation">AnimationActivity</string>
 </resources>

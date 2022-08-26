@@ -9,6 +9,11 @@
         android:theme="@style/Theme.ComposeDesign"
         tools:targetApi="31">
         <activity
+            android:name=".ui.view.animation.AnimationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_animation"
+            android:theme="@style/Theme.ComposeDesign" />
+        <activity
             android:name=".ui.view.shoes.ShoesDetailActivity"
             android:exported="false"
             android:label="@string/title_activity_shoes_detail"
@@ -17,6 +22,11 @@
             android:name=".ui.view.shoes.ShoesActivity"
             android:exported="true"
             android:label="@string/title_activity_shoes"
+            android:theme="@style/Theme.ComposeDesign" />
+        <activity
+            android:name=".ui.view.MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
             android:theme="@style/Theme.ComposeDesign">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,11 +34,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.view.MainActivity"
-            android:exported="true"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.ComposeDesign" />
     </application>
 
 </manifest>
