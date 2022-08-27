@@ -69,9 +69,6 @@ fun AnimationTestBody() {
             AnimationState.TransitionAnimation -> {
                 TransitionAnimation()
             }
-            AnimationState.AsStateAnimation -> {
-                AsStateAnimation()
-            }
             AnimationState.AnimationSpecEx -> {
                 AnimationSpecEx()
             }
@@ -93,9 +90,6 @@ fun AnimationList(state: MutableState<AnimationState>) {
         }
         ClickableText(text = "Transition Animation") {
             state.value = AnimationState.TransitionAnimation
-        }
-        ClickableText(text = "AsStateAnimation") {
-            state.value = AnimationState.AsStateAnimation
         }
         ClickableText(text = "AnimationSpec") {
             state.value = AnimationState.AnimationSpecEx
@@ -136,7 +130,6 @@ sealed class AnimationState {
     object List : AnimationState()
     object VisibleAnimation : AnimationState()
     object TransitionAnimation : AnimationState()
-    object AsStateAnimation : AnimationState()
     object AnimationSpecEx : AnimationState()
     object OtherAnimation : AnimationState()
 }
