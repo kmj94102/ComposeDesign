@@ -7,11 +7,14 @@
         <entry key="../../../../layout/compose-model-1661161529513.xml" value="0.25" />
         <entry key="../../../../layout/compose-model-1661162590720.xml" value="0.33" />
         <entry key="../../../../layout/compose-model-1661169048380.xml" value="0.5" />
+        <entry key="../../../../layout/compose-model-1661740870339.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_back.xml" value="0.1255" />
         <entry key="app/src/main/res/drawable/ic_circle.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_crown.xml" value="0.203" />
         <entry key="app/src/main/res/drawable/ic_logo.xml" value="0.248" />
         <entry key="app/src/main/res/drawable/ic_menu.xml" value="0.248" />
         <entry key="app/src/main/res/drawable/ic_plus.xml" value="0.248" />
+        <entry key="app/src/main/res/drawable/ic_search.xml" value="0.201" />
         <entry key="app/src/main/res/drawable/ic_user.xml" value="0.248" />
       </map>
     </option>

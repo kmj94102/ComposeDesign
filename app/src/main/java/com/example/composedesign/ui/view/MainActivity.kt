@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.example.composedesign.ui.ui.theme.ComposeDesignTheme
 import com.example.composedesign.ui.util.startActivity
 import com.example.composedesign.ui.view.animation.AnimationActivity
+import com.example.composedesign.ui.view.game.GameActivity
 import com.example.composedesign.ui.view.shoes.ShoesActivity
 
 class MainActivity : ComponentActivity() {
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
 fun MainBody() {
     val context = LocalContext.current
     val performClick : () -> Unit = {
-        context.startActivity(AnimationActivity::class.java)
+        context.startActivity(GameActivity::class.java)
     }
 
     LaunchedEffect(true) {
@@ -73,6 +74,15 @@ fun MainBody() {
                 color = Color(0xFFD81B60)
             ) {
                 context.startActivity(AnimationActivity::class.java)
+            }
+        }
+
+        item {
+            MainButton(
+                text = "Game",
+                color = Color(0xFFD81B60)
+            ) {
+                context.startActivity(GameActivity::class.java)
             }
         }
     }
