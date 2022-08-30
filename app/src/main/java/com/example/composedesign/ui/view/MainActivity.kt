@@ -25,6 +25,7 @@ import com.example.composedesign.ui.util.startActivity
 import com.example.composedesign.ui.view.animation.AnimationActivity
 import com.example.composedesign.ui.view.game.GameActivity
 import com.example.composedesign.ui.view.shoes.ShoesActivity
+import com.example.composedesign.ui.view.viewpager.ViewPagerActivity
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
 fun MainBody() {
     val context = LocalContext.current
     val performClick : () -> Unit = {
-        context.startActivity(GameActivity::class.java)
+        context.startActivity(ViewPagerActivity::class.java)
     }
 
     LaunchedEffect(true) {
@@ -80,9 +81,18 @@ fun MainBody() {
         item {
             MainButton(
                 text = "Game",
-                color = Color(0xFFD81B60)
+                color = Color(0xFF651FFF)
             ) {
                 context.startActivity(GameActivity::class.java)
+            }
+        }
+
+        item {
+            MainButton(
+                text = "Pager",
+                color = Color(0xFF2979FF)
+            ) {
+                context.startActivity(ViewPagerActivity::class.java)
             }
         }
     }
