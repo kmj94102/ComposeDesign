@@ -2,8 +2,7 @@ package com.example.composedesign.ui.view.game
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,15 +14,15 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -40,6 +39,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.delay
 
 @Composable
 fun GameScreen() {
@@ -48,7 +48,10 @@ fun GameScreen() {
             .fillMaxSize()
             .background(getGameBlack())
     ) {
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        LazyColumn(
+            contentPadding = PaddingValues(bottom = 70.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             /** 베너 영역 **/
             item { GameHeader() }
             /** 메인 컨텐츠 **/
@@ -86,6 +89,13 @@ fun GameHeader() {
                 .padding(bottom = 60.dp, end = 17.dp)
                 .align(Alignment.BottomEnd)
         )
+        
+        LaunchedEffect(state.currentPage) {
+            delay(3000)
+            val newPosition = if (state.currentPage + 1 >= 3) 0 else state.currentPage + 1
+            state.animateScrollToPage(newPosition)
+        }
+        
     }
 }
 
@@ -163,15 +173,13 @@ fun GameBody() {
                 .height(36.dp)
                 .fillMaxWidth()
         ) {
-            GameTabItem(
-                text = "RECOMMEND",
+            RecommendButton(
                 isSelected = state.value == "RECOMMEND",
                 modifier = Modifier.weight(1f)
             ) {
                 state.value = "RECOMMEND"
             }
-            GameTabItem(
-                text = "RANKING",
+            RankingButton(
                 isSelected = state.value == "RANKING",
                 modifier = Modifier.weight(1f)
             ) {
@@ -179,8 +187,24 @@ fun GameBody() {
             }
         }
 
+        val alignmentState by animateAlignmentAsState(if (state.value == "RANKING") Alignment.TopEnd else Alignment.TopStart)
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 14.dp)
+                .height(36.dp)
+                .fillMaxWidth(0.5f)
+                .align(alignmentState)
+                .border(
+                    border = BorderStroke(1.dp, Color.White),
+                    shape = RoundedCornerShape(6.dp)
+                )
+        )
+
         /** 텝에 따른 Content 설정 **/
-        Crossfade(targetState = state.value, animationSpec = tween(durationMillis = 500, easing = LinearEasing)) {
+        Crossfade(
+            targetState = state.value,
+            animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+        ) {
             if (it == "RECOMMEND") {
                 GameRecommend()
             } else {
@@ -190,44 +214,59 @@ fun GameBody() {
     }
 }
 
+@Composable
+fun animateAlignmentAsState(
+    targetAlignment: Alignment,
+): State<Alignment> {
+    val biased = targetAlignment as BiasAlignment
+    val horizontal by animateFloatAsState(biased.horizontalBias)
+    val vertical by animateFloatAsState(biased.verticalBias)
+    return derivedStateOf { BiasAlignment(horizontal, vertical) }
+}
+
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun GameTabItem(
-    text: String,
+fun RecommendButton(
     isSelected: Boolean,
     modifier: Modifier = Modifier,
     onClickListener: () -> Unit
 ) {
+    val maxValue = 430f
+    val startAnimation = animateFloatAsState(
+        targetValue = if (isSelected) 0f else maxValue,
+        animationSpec = tween(durationMillis = 250)
+    )
+
     Box(
         modifier = modifier
             .height(36.dp)
             .clickable {
                 onClickListener()
             }
-            .border(
-                border = if (isSelected) BorderStroke(1.dp, Color.White)
-                else BorderStroke(0.dp, Color.Transparent),
-                shape = RoundedCornerShape(6.dp)
-            )
             .background(Color.Transparent)
     ) {
         Text(
-            text = text,
+            text = "RECOMMEND",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = getGameGray(),
             modifier = Modifier.align(Alignment.Center)
         )
-        if (isSelected) {
-            Text(
-                text = text,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                style = TextStyle(
-                    brush = Brush.horizontalGradient(listOf(getGameBlue(), getGamePurple()))
-                ),
-                modifier = Modifier.align(Alignment.Center)
+
+        Text(
+            text = "RECOMMEND",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = getGameGray(),
+            style = TextStyle(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(getGameBlue(), getGamePurple()),
+                    startX = startAnimation.value,
+                    endX = maxValue,
+                    tileMode = TileMode.Decal
+                )
+            ),
+            modifier = Modifier.align(Alignment.Center)
 //                    .graphicsLayer(alpha = 0.99f)
 //                    .drawWithCache {
 //                        val brush = Brush.horizontalGradient(listOf(getGameBlue(), getGamePurple()))
@@ -236,8 +275,54 @@ fun GameTabItem(
 //                            drawRect(brush, blendMode = BlendMode.SrcAtop)
 //                        }
 //                    }
-            )
-        }
+        )
+    }
+}
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
+fun RankingButton(
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    onClickListener: () -> Unit
+) {
+    val maxValue = 300f
+    val startAnimation = animateFloatAsState(
+        targetValue = if (isSelected) maxValue else 0f,
+        animationSpec = tween(durationMillis = 250)
+    )
+
+    Box(
+        modifier = modifier
+            .height(36.dp)
+            .clickable {
+                onClickListener()
+            }
+            .background(Color.Transparent)
+    ) {
+        Text(
+            text = "RANKING",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = getGameGray(),
+            modifier = Modifier.align(Alignment.Center)
+        )
+
+        Text(
+            text = "RANKING",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = getGameGray(),
+            style = TextStyle(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(getGameBlue(), getGamePurple()),
+                    startX = 0f,
+                    endX = startAnimation.value,
+                    tileMode = TileMode.Decal
+                )
+            ),
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }
 
@@ -310,8 +395,9 @@ fun HotGamesItem(
             text = title,
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
+            color = Color.White,
             modifier = Modifier
-                .padding(top = 20.dp)
+                .padding(top = 10.dp)
                 .width(90.dp)
         )
 
@@ -348,7 +434,7 @@ fun GameRanking() {
             iconSize = 60.dp,
             iconRes = R.drawable.img_game_icon2,
             cardHeight = 134.dp,
-            cardColor = Color(0xFFFF6262),
+            cardColor = Color(0xFFFF8CA8),
             modifier = Modifier.weight(1f)
         )
 
@@ -357,7 +443,7 @@ fun GameRanking() {
             iconSize = 50.dp,
             iconRes = R.drawable.img_game_icon3,
             cardHeight = 96.dp,
-            cardColor = Color(0xFFFF6262),
+            cardColor = Color(0xFFFFE893),
             modifier = Modifier.weight(1f)
         )
     }
@@ -388,7 +474,7 @@ fun RankingItem(
                 .background(
                     brush = Brush.radialGradient(
                         colors = listOf(cardColor, Color.White),
-                        radius = 600f
+                        radius = 1100f
                     )
                 )
         ) {
