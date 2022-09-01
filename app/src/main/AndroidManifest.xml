@@ -14,6 +14,11 @@
             android:label="@string/title_activity_view_pager"
             android:theme="@style/Theme.ComposeDesign" />
         <activity
+            android:name=".ui.view.gradient.GradientActivity"
+            android:exported="false"
+            android:label="@string/title_activity_view_pager"
+            android:theme="@style/Theme.ComposeDesign" />
+        <activity
             android:name=".ui.view.game.GameActivity"
             android:exported="false"
             android:label="@string/title_activity_game"

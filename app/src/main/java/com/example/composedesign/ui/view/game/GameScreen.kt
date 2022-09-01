@@ -66,6 +66,12 @@ fun GameScreen() {
 @Composable
 fun GameHeader() {
     val state = rememberPagerState()
+    val bannerList = listOf(
+        R.drawable.img_game_banner1,
+        R.drawable.img_game_banner2,
+        R.drawable.img_game_banner3
+    )
+    val titleList = listOf("SUPER MARIO", "KIRBY", "DIGIMON SURVIVE")
 
     Box(
         modifier = Modifier
@@ -77,7 +83,7 @@ fun GameHeader() {
             count = 3,
             state = state
         ) { index ->
-            BannerItem(index)
+            BannerItem(bannerList[index], titleList[index])
         }
 
         /** Indicator **/
@@ -89,28 +95,21 @@ fun GameHeader() {
                 .padding(bottom = 60.dp, end = 17.dp)
                 .align(Alignment.BottomEnd)
         )
-        
+
         LaunchedEffect(state.currentPage) {
             delay(3000)
-            val newPosition = if (state.currentPage + 1 >= 3) 0 else state.currentPage + 1
+            val newPosition = (state.currentPage + 1) % state.pageCount
             state.animateScrollToPage(newPosition)
         }
-        
+
     }
 }
 
 @Composable
-fun BannerItem(index: Int) {
-    val bannerList = listOf(
-        R.drawable.img_game_banner1,
-        R.drawable.img_game_banner2,
-        R.drawable.img_game_banner3
-    )
-    val titleList = listOf("SUPER MARIO", "KIRBY", "DIGIMON SURVIVE")
-
+fun BannerItem(imageRes: Int, title: String) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Image(
-            painter = painterResource(id = bannerList[index]),
+            painter = painterResource(id = imageRes),
             contentDescription = "banner",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -131,7 +130,7 @@ fun BannerItem(index: Int) {
         )
         /** 타이틀 **/
         Text(
-            text = titleList[index],
+            text = title,
             color = Color.White,
             fontWeight = FontWeight.Bold,
             fontSize = 30.sp,
@@ -234,7 +233,7 @@ fun RecommendButton(
     val maxValue = 430f
     val startAnimation = animateFloatAsState(
         targetValue = if (isSelected) 0f else maxValue,
-        animationSpec = tween(durationMillis = 250)
+        animationSpec = tween(durationMillis = 500)
     )
 
     Box(
@@ -289,7 +288,7 @@ fun RankingButton(
     val maxValue = 300f
     val startAnimation = animateFloatAsState(
         targetValue = if (isSelected) maxValue else 0f,
-        animationSpec = tween(durationMillis = 250)
+        animationSpec = tween(durationMillis = 500)
     )
 
     Box(

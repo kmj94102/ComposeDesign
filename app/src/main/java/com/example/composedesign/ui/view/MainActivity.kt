@@ -1,8 +1,5 @@
 package com.example.composedesign.ui.view
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -18,12 +14,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composedesign.ui.ui.theme.ComposeDesignTheme
 import com.example.composedesign.ui.util.startActivity
 import com.example.composedesign.ui.view.animation.AnimationActivity
 import com.example.composedesign.ui.view.game.GameActivity
+import com.example.composedesign.ui.view.gradient.GradientActivity
 import com.example.composedesign.ui.view.shoes.ShoesActivity
 import com.example.composedesign.ui.view.viewpager.ViewPagerActivity
 
@@ -47,7 +43,7 @@ class MainActivity : ComponentActivity() {
 fun MainBody() {
     val context = LocalContext.current
     val performClick : () -> Unit = {
-        context.startActivity(ViewPagerActivity::class.java)
+        context.startActivity(GradientActivity::class.java)
     }
 
     LaunchedEffect(true) {
@@ -93,6 +89,15 @@ fun MainBody() {
                 color = Color(0xFF2979FF)
             ) {
                 context.startActivity(ViewPagerActivity::class.java)
+            }
+        }
+
+        item {
+            MainButton(
+                text = "Gradient",
+                color = Color(0xFF00E676)
+            ) {
+                context.startActivity(GradientActivity::class.java)
             }
         }
     }
