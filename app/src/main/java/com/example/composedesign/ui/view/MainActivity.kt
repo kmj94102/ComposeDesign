@@ -20,6 +20,7 @@ import com.example.composedesign.ui.util.startActivity
 import com.example.composedesign.ui.view.animation.AnimationActivity
 import com.example.composedesign.ui.view.game.GameActivity
 import com.example.composedesign.ui.view.gradient.GradientActivity
+import com.example.composedesign.ui.view.graphics_layer.GraphicsLayerActivity
 import com.example.composedesign.ui.view.shoes.ShoesActivity
 import com.example.composedesign.ui.view.viewpager.ViewPagerActivity
 
@@ -43,7 +44,7 @@ class MainActivity : ComponentActivity() {
 fun MainBody() {
     val context = LocalContext.current
     val performClick : () -> Unit = {
-        context.startActivity(GradientActivity::class.java)
+        context.startActivity(GraphicsLayerActivity::class.java)
     }
 
     LaunchedEffect(true) {
@@ -98,6 +99,15 @@ fun MainBody() {
                 color = Color(0xFF00E676)
             ) {
                 context.startActivity(GradientActivity::class.java)
+            }
+        }
+
+        item {
+            MainButton(
+                text = "GraphicsLayer",
+                color = Color(0xFFFF3D00)
+            ) {
+                context.startActivity(GraphicsLayerActivity::class.java)
             }
         }
     }
